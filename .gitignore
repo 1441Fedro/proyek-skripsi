@@ -1,0 +1,33 @@
+# Python
+venv/
+__pycache__/
+include/
+Scripts/
+share/
+temp_logic_extract/
+uploaded_reports/
+pyvenv.cfg
+
+# Node
+node_modules/
+.env*
+build/
+dist/
+
+# System files
+.DS_Store
+*.log
+
+# VSCode
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+Lib/
+*.dll
+*.lib
+*.config.js
+package*
+*.txt
+
