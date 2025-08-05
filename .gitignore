@@ -10,7 +10,6 @@ pyvenv.cfg
 
 # Node
 node_modules/
-.env*
 build/
 dist/
 
