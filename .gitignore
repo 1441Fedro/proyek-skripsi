@@ -30,4 +30,4 @@ Lib/
 *.config.js
 package*
 *.txt
-
+!requirements.txt
