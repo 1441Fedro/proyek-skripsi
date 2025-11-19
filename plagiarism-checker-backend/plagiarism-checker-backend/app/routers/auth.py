@@ -19,7 +19,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # SECRET_KEY = os.getenv("JWT_SECRET")
 SECRET_KEY = "Admin1234@"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
 # Dependency
 def get_db():

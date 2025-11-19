@@ -11,6 +11,7 @@ const Navbar = () => {
         localStorage.removeItem('user')
         localStorage.removeItem('role')
         localStorage.removeItem('lastAnalysisResult')
+        localStorage.removeItem('lastBatchId')
         navigate('/')
     }
 

@@ -9,16 +9,14 @@ import UploadedFilesTable from '../components/UploadedFilesTable';
 import AnalysisResultTable from '../components/AnalysisResultTable'; 
 
 const UploadPage = () => {
-    // STATE
     const [files, setFiles] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [results, setResults] = useState([]);
     const [uploadedFileNames, setUploadedFileNames] = useState([]);
     const [selectedDoc, setSelectedDoc] = useState('');
-    
+    const [batchId, setBatchId] = useState('');
     const [isUploaded, setIsUploaded] = useState(false); 
-    // ✅ STATE BARU: Menandai bahwa analisis sudah selesai dijalankan
     const [isAnalyzed, setIsAnalyzed] = useState(false); 
     
     // const navigate = useNavigate();
@@ -43,8 +41,6 @@ const UploadPage = () => {
             }
         }
     }, []);
-
-    // HANDLERS
     
     // ✅ Mengganti file yang ada & Reset status
     const handleFileChange = (e) => {
@@ -92,17 +88,24 @@ const UploadPage = () => {
             formData.append('files', file);
         });
 
+        const token = localStorage.getItem('token'); 
+        if (!token) {
+            toast.error("Anda tidak terautentikasi. Silakan login.");
+            setIsUploading(false);
+            return;
+        }
+
         try {
             const res = await api.post('/upload', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
+                headers: { 
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
             });
 
             toast.success(res.data.message || `${res.data.uploaded_files.length} file berhasil diunggah.`);
-            
-            // ✅ Kunci utama: Set isUploaded menjadi TRUE setelah sukses.
             setIsUploaded(true);
-            
-            // ✅ Kunci 2: Kosongkan daftar file setelah upload berhasil
+            setBatchId(res.data.batch_id);
             setFiles([]); 
             
         } catch (err) {
@@ -125,9 +128,25 @@ const UploadPage = () => {
             return;
         }
 
+        if (!batchId) {
+            toast.error("Batch ID tidak ditemukan. Silakan unggah file kembali.");
+            return;
+        }
+
         setIsAnalyzing(true);
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error("Anda tidak terautentikasi. Silakan login.");
+            setIsAnalyzing(false);
+            return;
+        }
         try {
-            const res = await api.get('/analisis/run');
+            const res = await api.post('/analisis/run', { batch_id: batchId }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+            }
+        });
             
             localStorage.setItem('lastAnalysisResult', JSON.stringify(res.data.pairs));
             

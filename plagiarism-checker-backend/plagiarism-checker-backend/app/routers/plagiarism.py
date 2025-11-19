@@ -6,42 +6,42 @@ from app.services.similarity import tfidf_cosine_similarity, bert_similarity, ng
 
 router = APIRouter(prefix="/analisis", tags=["analisis"])
 
-@router.get("/run")
-def run_similarity_analysis():
-    docs = list(mongo_reports.find({}, {"file_name": 1, "extracted_text": 1, "_id": 0}))
-    filenames = [d.get("file_name", f"Unknown_{i}") for i, d in enumerate(docs)]
-    texts = [d.get("extracted_text", f"Unknown_{i}") for i, d in enumerate(docs)]
+# @router.get("/run")
+# def run_similarity_analysis():
+#     docs = list(mongo_reports.find({}, {"file_name": 1, "extracted_text": 1, "_id": 0}))
+#     filenames = [d.get("file_name", f"Unknown_{i}") for i, d in enumerate(docs)]
+#     texts = [d.get("extracted_text", f"Unknown_{i}") for i, d in enumerate(docs)]
 
-    tfidf_result = tfidf_cosine_similarity(texts)
-    bert_result = bert_similarity(texts)
-    ngram_result = ngram_similarity(texts)
+#     tfidf_result = tfidf_cosine_similarity(texts)
+#     bert_result = bert_similarity(texts)
+#     ngram_result = ngram_similarity(texts)
 
-    # Simpan hasil ke MongoDB
-    mongo_reports.delete_many({"type": "analysis_result"})
-    mongo_reports.insert_one({
-        "type": "analysis_result",
-        "filenames": filenames,
-        "tfidf": tfidf_result,
-        "bert": bert_result,
-        "ngram": ngram_result,
-    })
+#     # Simpan hasil ke MongoDB
+#     mongo_reports.delete_many({"type": "analysis_result"})
+#     mongo_reports.insert_one({
+#         "type": "analysis_result",
+#         "filenames": filenames,
+#         "tfidf": tfidf_result,
+#         "bert": bert_result,
+#         "ngram": ngram_result,
+#     })
 
-    # Buat pairs agar langsung bisa digunakan frontend
-    pairs = []
-    n = len(filenames)
-    for i in range(n):
-        for j in range(i + 1, n):
-            pairs.append({
-                "doc1": filenames[i],
-                "doc2": filenames[j],
-                "tfidf": tfidf_result[i][j],
-                "bert": bert_result[i][j],
-                "ngram": ngram_result[i][j],
-            })
+#     # Buat pairs agar langsung bisa digunakan frontend
+#     pairs = []
+#     n = len(filenames)
+#     for i in range(n):
+#         for j in range(i + 1, n):
+#             pairs.append({
+#                 "doc1": filenames[i],
+#                 "doc2": filenames[j],
+#                 "tfidf": tfidf_result[i][j],
+#                 "bert": bert_result[i][j],
+#                 "ngram": ngram_result[i][j],
+#             })
 
-    return {"message": "Analisis kemiripan selesai", 
-            "total_files": len(filenames), 
-            "pairs": pairs}
+#     return {"message": "Analisis kemiripan selesai", 
+#             "total_files": len(filenames), 
+#             "pairs": pairs}
 
 @router.get("/", include_in_schema=False)
 @router.get("")
