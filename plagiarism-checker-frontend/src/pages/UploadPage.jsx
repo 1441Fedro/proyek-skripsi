@@ -1,80 +1,88 @@
 import MainLayout from '../layouts/MainLayout';
 import { useState, useEffect } from 'react';
 import api from '../api/api';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-// ASUMSI: Komponen sudah diimpor dari lokasi yang benar (misalnya, '../components')
-// Silakan ganti path ini sesuai struktur folder Anda
 import UploadDropzone from '../components/UploadDropzone'; 
 import UploadedFilesTable from '../components/UploadedFilesTable'; 
-import AnalysisResultTable from '../components/AnalysisResultTable'; // Komponen baru
+import AnalysisResultTable from '../components/AnalysisResultTable'; 
 
 const UploadPage = () => {
-    // STATE - Dipertahankan dari versi UploadPage.jsx lama
+    // STATE
     const [files, setFiles] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [results, setResults] = useState([]);
-    const [uploadedFileNames, setUploadedFileNames] = useState([]); // State untuk filter
+    const [uploadedFileNames, setUploadedFileNames] = useState([]);
     const [selectedDoc, setSelectedDoc] = useState('');
-    const [isUploaded, setIsUploaded] = useState(false);
-    const navigate = useNavigate();
+    
+    const [isUploaded, setIsUploaded] = useState(false); 
+    // ✅ STATE BARU: Menandai bahwa analisis sudah selesai dijalankan
+    const [isAnalyzed, setIsAnalyzed] = useState(false); 
+    
+    // const navigate = useNavigate();
 
-    // useEffect untuk memuat hasil analisis terakhir saat halaman dimuat (dari versi lama)
+    // Memuat hasil analisis terakhir (Hanya untuk display AnalysisResultTable)
     useEffect(() => {
         const storedResults = localStorage.getItem('lastAnalysisResult');
         if (storedResults) {
             const parsedResults = JSON.parse(storedResults);
             setResults(parsedResults);
 
-            // Ekstrak daftar nama file unik untuk filter
             const names = new Set();
             parsedResults.forEach(r => {
                 names.add(r.doc1);
                 names.add(r.doc2);
             });
             setUploadedFileNames(Array.from(names).sort());
+            
+            // Jika ada hasil, asumsikan analisis sebelumnya sudah selesai
+            if (parsedResults.length > 0) {
+                setIsAnalyzed(true);
+            }
         }
     }, []);
 
     // HANDLERS
     
-    // Fungsi untuk menambah file dari input biasa
+    // ✅ Mengganti file yang ada & Reset status
     const handleFileChange = (e) => {
-        // const newFiles = Array.from(e.target.files).filter(file => 
-        //     !files.some(existingFile => existingFile.name === file.name && existingFile.size === file.size)
-        // );
-        // setFiles(prev => [...prev, ...newFiles]);
         const newFiles = Array.from(e.target.files);
         setFiles(newFiles); 
         setIsUploaded(false); // Reset status upload
+        setIsAnalyzed(false); // Reset status analisis
     };
 
-    // Handler untuk menerima file dari drag and drop
+    // ✅ Mengganti file yang ada & Reset status
     const handleDrop = (e) => {
-        // e.preventDefault() sudah dipanggil di UploadDropzone.jsx
-        // const droppedFiles = Array.from(e.dataTransfer.files).filter(file => 
-        //     !files.some(existingFile => existingFile.name === file.name && existingFile.size === file.size)
-        // );
-        // setFiles(prev => [...prev, ...droppedFiles]);
         const droppedFiles = Array.from(e.dataTransfer.files);
         setFiles(droppedFiles);
         setIsUploaded(false); // Reset status upload
+        setIsAnalyzed(false); // Reset status analisis
     };
 
-    // Fungsi untuk menghapus file dari daftar
+    // Saat file dihapus dari antrian, hanya reset status jika files < 2
     const handleRemoveFile = (indexToRemove) => {
-        setFiles(files.filter((_, index) => index !== indexToRemove));
+        const updatedFiles = files.filter((_, index) => index !== indexToRemove);
+        setFiles(updatedFiles);
         toast.info(`File berhasil dihapus dari antrian.`);
+        
+        if (updatedFiles.length < 2) {
+            setIsUploaded(false); 
+            setIsAnalyzed(false);
+        }
     };
 
-    // Handler untuk tombol Upload (Sesuai dengan report.py endpoint /upload)
     const handleUpload = async () => {
-        if (files.length === 0) return;
-
+        // Pencegahan ganda
         if (isUploaded) {
             toast.warn("File sudah diunggah. Silakan RUN ANALISIS atau tambahkan file baru.");
+            return;
+        }
+        
+        if (files.length < 2) { 
+            toast.warn("Minimal 2 file dibutuhkan untuk analisis. Unggah dibatalkan.");
             return;
         }
 
@@ -85,17 +93,18 @@ const UploadPage = () => {
         });
 
         try {
-            // Memanggil endpoint /upload 
             const res = await api.post('/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
             toast.success(res.data.message || `${res.data.uploaded_files.length} file berhasil diunggah.`);
-            // setFiles([]); // Kosongkan daftar setelah upload berhasil
-            if (files.length >= 2) { // Pastikan minimal 2 file terunggah
-                setIsUploaded(true);
-            }
-
+            
+            // ✅ Kunci utama: Set isUploaded menjadi TRUE setelah sukses.
+            setIsUploaded(true);
+            
+            // ✅ Kunci 2: Kosongkan daftar file setelah upload berhasil
+            setFiles([]); 
+            
         } catch (err) {
             console.error("Upload error:", err);
             const errorMessage = err.response?.data?.detail || 'Gagal mengunggah file. Periksa koneksi atau format file.';
@@ -105,10 +114,14 @@ const UploadPage = () => {
         }
     };
 
-    // Handler untuk tombol Analisis (Sesuai dengan plagiarism.py endpoint /analisis/run)
     const handleAnalyze = async () => {
         if (!isUploaded) {
-            toast.warn("Harap UPLOAD file terlebih dahulu sebelum menjalankan analisis.");
+            toast.warn("Harap UPLOAD file terlebih dahulu.");
+            return;
+        }
+        
+        if (isAnalyzed) { // Pencegahan ganda
+            toast.warn("Analisis sudah selesai. Harap unggah file baru untuk analisis baru.");
             return;
         }
 
@@ -119,7 +132,22 @@ const UploadPage = () => {
             localStorage.setItem('lastAnalysisResult', JSON.stringify(res.data.pairs));
             
             toast.success("Analisis berhasil dijalankan! Mengarahkan ke halaman hasil.");
-            navigate('/result'); 
+            
+            // ✅ Kunci utama: Set isAnalyzed menjadi TRUE
+            setIsAnalyzed(true);
+            
+            // Set state untuk tampilan hasil analisis di halaman ini
+            const names = new Set();
+            res.data.pairs.forEach(r => {
+                names.add(r.doc1);
+                names.add(r.doc2);
+            });
+            setUploadedFileNames(Array.from(names).sort());
+            setResults(res.data.pairs);
+            
+            // Asumsi: Jika analisis berhasil, Anda tetap berada di halaman upload dan menampilkan hasil.
+            // Jika Anda ingin pindah ke /result:
+            // navigate('/result'); 
 
         } catch (err) {
             console.error("Analysis error:", err);
@@ -127,8 +155,6 @@ const UploadPage = () => {
             toast.error(errorMessage);
         } finally {
             setIsAnalyzing(false);
-            setIsUploaded(false);
-            setFiles([]); 
         }
     };
 
@@ -142,12 +168,13 @@ const UploadPage = () => {
                     </h1>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Kolom Kiri: Kotak Upload */}
                         <div className="lg:col-span-2">
                             <UploadDropzone
                                 files={files}
                                 isUploading={isUploading}
                                 isAnalyzing={isAnalyzing}
+                                isUploaded={isUploaded} 
+                                isAnalyzed={isAnalyzed} // ✅ PASS STATE BARU
                                 handleFileChange={handleFileChange}
                                 handleDrop={handleDrop} 
                                 handleUpload={handleUpload}
@@ -155,7 +182,6 @@ const UploadPage = () => {
                             />
                         </div>
 
-                        {/* Kolom Kanan: Daftar File */}
                         <div className="lg:col-span-1">
                             <UploadedFilesTable
                                 files={files}
@@ -165,7 +191,7 @@ const UploadPage = () => {
                     </div>
 
                     {/* Bagian Bawah: Tabel Hasil Analisis */}
-                    {results.length > 0 && (
+                    {results.length > 0 && isAnalyzed && ( // Tampilkan jika sudah dianalisis
                         <AnalysisResultTable
                             results={results}
                             uploadedFileNames={uploadedFileNames}

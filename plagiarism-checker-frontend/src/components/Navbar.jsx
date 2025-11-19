@@ -51,9 +51,9 @@ const Navbar = () => {
                                 <Link to="/admin/users" className={getLinkClass('/admin/users')}>
                                     Manajemen User
                                 </Link>
-                                <Link to="/admin/create-user" className={getLinkClass('/admin/create-user')}>
+                                {/* <Link to="/admin/create-user" className={getLinkClass('/admin/create-user')}>
                                     Kelola Asisten
-                                </Link>
+                                </Link> */}
                             </>
                         )}
                     </div>

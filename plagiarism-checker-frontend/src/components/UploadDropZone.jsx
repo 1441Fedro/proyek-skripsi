@@ -7,50 +7,53 @@ const CloudUploadIcon = () => (
     </svg>
 );
 
-const UploadDropzone = ({ files, isUploading, isAnalyzing, isUploaded, handleFileChange, handleDrop, handleUpload, handleAnalyze }) => {
+// ✅ Terima isAnalyzed
+const UploadDropzone = ({ files, isUploading, isAnalyzing, isUploaded, isAnalyzed, handleFileChange, handleDrop, handleUpload, handleAnalyze }) => {
     
-    const isReadyToAnalyze = files.length >= 2;
+    // Syarat minimum tetap 2 file
+    const isReadyToUpload = files.length >= 2; 
 
     const internalHandleDragOver = (e) => {
         e.preventDefault(); 
     };
 
     const internalHandleDrop = (e) => {
-        e.preventDefault(); // Mencegah browser membuka file
-        if (handleDrop) {
-            handleDrop(e); // Panggil handler dari parent untuk memproses file
+        e.preventDefault();
+        if (!isUploaded) { // Hanya izinkan drop jika belum di-upload
+            handleDrop(e);
         }
     };
-
+    
     // Logika kelas untuk tombol UPLOAD
+    // AKTIF: ReadyToUpload (>=2 file) AND NOT isUploaded
     const uploadButtonClass = `flex-1 py-3 px-6 rounded-xl font-bold transition-transform transform ${
-        // Kondisi AKTIF: Ada file, tidak sedang loading, dan belum diupload
-        files.length > 0 && !isUploading && !isAnalyzing && !isUploaded
+        isReadyToUpload && !isUploading && !isAnalyzing && !isUploaded
             ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg hover:scale-[1.01]'
-            // Kondisi NON-AKTIF: Default style (abu-abu)
             : 'bg-gray-400 text-gray-700 cursor-not-allowed'
     }`;
 
     // Logika kelas untuk tombol RUN ANALISIS
+    // AKTIF: isUploaded AND NOT isAnalyzing AND NOT isAnalyzed
     const analyzeButtonClass = `flex-1 py-3 px-6 rounded-xl font-bold transition-transform transform ${
-        // Kondisi AKTIF: Sudah diupload, dan tidak sedang loading
-        isUploaded && !isAnalyzing && !isUploading
+        isUploaded && !isAnalyzing && !isUploading && !isAnalyzed
             ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:scale-[1.01]'
-            // Kondisi NON-AKTIF: Default style (abu-abu)
             : 'bg-gray-400 text-gray-700 cursor-not-allowed'
     }`;
+
 
     return (
         <div className="bg-slate-900 rounded-2xl shadow-2xl p-8 border-t-4 border-purple-500">
             <h2 className="text-2xl font-bold mb-4 text-yellow-300">Unggah Laporan</h2>
             
-            {/* Kotak Drag and Drop */}
             <div
                 onDragOver={internalHandleDragOver} 
                 onDrop={internalHandleDrop}
-                onClick={() => document.getElementById('file-input').click()}
-                className="flex flex-col items-center justify-center h-48 border-4 border-dashed border-yellow-500 rounded-xl cursor-pointer 
-                        text-yellow-100 hover:bg-slate-800 transition duration-300 p-6"
+                onClick={() => { if (!isUploaded) document.getElementById('file-input').click() }} // ✅ Hanya klik jika belum diupload
+                className={`flex flex-col items-center justify-center h-48 border-4 border-dashed rounded-xl p-6 transition duration-300 
+                            ${isUploaded || isAnalyzed
+                                ? 'border-green-500 text-green-200 cursor-not-allowed bg-slate-800' 
+                                : 'border-yellow-500 text-yellow-100 hover:bg-slate-800 cursor-pointer'
+                            }`}
             >
                 <input
                     type="file"
@@ -59,41 +62,38 @@ const UploadDropzone = ({ files, isUploading, isAnalyzing, isUploaded, handleFil
                     onChange={handleFileChange}
                     className="hidden"
                     accept=".pdf,.docx,.zip,.rar"
+                    disabled={isUploaded || isAnalyzed} // ✅ Disabled input file setelah upload/analisis
                 />
                 <CloudUploadIcon />
                 <p className="mt-3 text-lg font-medium">Seret & Lepas File di Sini</p>
-                <p className="text-sm">atau klik untuk memilih file. (PDF, DOCX, ZIP, RAR)</p>
+                <p className="text-sm">
+                    {isAnalyzed ? 'Analisis Selesai.' : isUploaded ? 'File berhasil diunggah. Silakan RUN ANALISIS' : 'atau klik untuk memilih file. (PDF, DOCX, ZIP, RAR)'}
+                </p>
             </div>
 
             {/* Tombol Aksi */}
             <div className="mt-6 flex space-x-4">
                 <button
                     onClick={handleUpload}
-                    disabled={files.length === 0 || isUploading || isAnalyzing || isUploaded}
-                    // className={`flex-1 py-3 px-6 rounded-xl font-bold transition-transform transform ${
-                    //     files.length > 0 && !isUploading && !isAnalyzing
-                    //         ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg hover:scale-[1.01]'
-                    //         : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                    // }`}
-                    className={uploadButtonClass}
+                    // ✅ Kondisi Disabled: files.length < 2, isUploading, isAnalyzing, ATAU SUDAH DIUPLOAD
+                    disabled={!isReadyToUpload || isUploading || isAnalyzing || isUploaded}
+                    className={uploadButtonClass} 
                 >
                     {isUploading ? 'Mengunggah...' : `UPLOAD (${files.length} File)`}
                 </button>
 
                 <button
                     onClick={handleAnalyze}
-                    disabled={!isUploaded || isAnalyzing || isUploading}
-                    // className={`flex-1 py-3 px-6 rounded-xl font-bold transition-transform transform ${
-                    //     isReadyToAnalyze && !isAnalyzing && !isUploading
-                    //         ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:scale-[1.01]'
-                    //         : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                    // }`}
-                    className={analyzeButtonClass}
+                    // ✅ Kondisi Disabled: TIDAK isUploaded, isAnalyzing, isUploading, ATAU SUDAH DIANALISIS
+                    disabled={!isUploaded || isAnalyzing || isUploading || isAnalyzed}
+                    className={analyzeButtonClass} 
                 >
                     {isAnalyzing ? 'Menganalisis...' : 'RUN ANALISIS'}
                 </button>
             </div>
-            {!isUploaded && !isReadyToAnalyze && (
+            
+            {/* Pesan Syarat Minimum */}
+            {!isUploaded && !isAnalyzed && !isReadyToUpload && (
                 <p className="mt-3 text-center text-sm text-red-400">
                     *Minimal 2 file dibutuhkan untuk menjalankan analisis.
                 </p>

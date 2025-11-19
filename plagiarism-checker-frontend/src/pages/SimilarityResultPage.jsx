@@ -1,16 +1,26 @@
 /** SimilarityResultPage.jsx */
 import { useEffect, useState, useMemo } from 'react'
 import MainLayout from '../layouts/MainLayout'
-import { CSVLink } from 'react-csv'
+import ResultTable from '../components/ResultTable'; 
 
 const SimilarityResultPage = () => {
-    const [results, setResults] = useState([])
+    const [rawResults, setRawResults] = useState([]) // Data mentah
+    const [loading, setLoading] = useState(true)
+    
+    // ✅ STATE SORTING
     const [sortKey, setSortKey] = useState(null)
-    const [sortOrder, setSortOrder] = useState(null)
+    const [sortOrder, setSortOrder] = useState(null) // 'asc', 'desc', atau null
 
-    const fetchResults = async () => {
+    const fetchResults = () => {
+        setLoading(true);
         const lastResult = localStorage.getItem('lastAnalysisResult')
-        if (!lastResult) return
+        
+        if (!lastResult) {
+            setLoading(false);
+            setRawResults([]);
+            return;
+        }
+
         const pairs = JSON.parse(lastResult)
 
         const seen = new Set()
@@ -24,106 +34,91 @@ const SimilarityResultPage = () => {
             }
         })
 
-        setResults(uniquePairs)
+        setRawResults(uniquePairs)
+        setLoading(false);
     }
 
     useEffect(() => {
         fetchResults()
     }, [])
 
+    // ✅ FUNGSI PENGURUTAN TRI-STATE
     const handleSort = (key) => {
-        if (sortKey === key) {
-            if (sortOrder === 'asc') setSortOrder('desc')
-            else if (sortOrder === 'desc') {
-                setSortKey(null)
-                setSortOrder(null)
-            } else setSortOrder('asc')
+        if (sortKey !== key) {
+            // Kolom baru diklik: Sort 'asc'
+            setSortKey(key);
+            setSortOrder('asc');
+        } else if (sortOrder === 'asc') {
+            // Sudah 'asc', klik lagi: Sort 'desc'
+            setSortOrder('desc');
+        } else if (sortOrder === 'desc') {
+            // Sudah 'desc', klik lagi: Kembali ke awal (null)
+            setSortKey(null);
+            setSortOrder(null);
         } else {
-            setSortKey(key)
-            setSortOrder('asc')
+            // Kembali dari null ke 'asc' (jika sudah di-reset)
+            setSortKey(key);
+            setSortOrder('asc');
         }
     }
 
+    // ✅ LOGIKA SORTING DATA
     const sortedResults = useMemo(() => {
-        if (!sortKey || !sortOrder) return results
-        return [...results].sort((a, b) => {
-            return sortOrder === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey]
-        })
-    }, [results, sortKey, sortOrder])
+        if (!sortKey || !sortOrder) {
+            return rawResults; // Tampilan awal (berdasarkan urutan API/Load)
+        }
 
-    const getArrow = (key) => {
-        if (sortKey !== key) return ''
-        if (sortOrder === 'asc') return ' ↓'
-        if (sortOrder === 'desc') return ' ↑'
-        return ''
-    }
+        const sorted = [...rawResults].sort((a, b) => {
+            let aValue, bValue;
+
+            // Handle sorting untuk kolom persentase (diubah ke float) dan 'Plagiat'
+            if (['tfidf', 'bert', 'ngram'].includes(sortKey)) {
+                aValue = a[sortKey]; // Nilai sudah berupa float dari API
+                bValue = b[sortKey];
+            } else if (sortKey === 'plagiat') {
+                aValue = a.plagiat === 'Ya' ? 1 : a.plagiat === 'Tidak' ? 0 : 2;
+                bValue = b.plagiat === 'Ya' ? 1 : b.plagiat === 'Tidak' ? 0 : 2;
+            } else {
+                // Sorting string untuk doc1/doc2
+                aValue = a[sortKey].toLowerCase();
+                bValue = b[sortKey].toLowerCase();
+            }
+
+            if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+            if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        return sorted;
+    }, [rawResults, sortKey, sortOrder]);
+
 
     return (
-        <MainLayout>
-            <h1 className="text-2xl font-bold mb-4">Hasil Analisis Kesamaan Dokumen</h1>
+        <div className="min-h-screen bg-gradient-to-br from-blue-700 to-purple-500 p-8">
+            <MainLayout>
+                <div className="max-w-7xl mx-auto py-8">
+                    <h1 className="text-3xl font-extrabold mb-8 text-white text-center">
+                        <span className="bg-white text-transparent bg-clip-text">LAPORAN</span> HASIL ANALISIS
+                    </h1>
 
-            <div className="mb-4">
-                <CSVLink
-                    data={results.map(r => ({
-                        dokumen_1: r.doc1,
-                        dokumen_2: r.doc2,
-                        tfidf: (r.tfidf * 100).toFixed(2) + '%',
-                        bert: (r.bert * 100).toFixed(2) + '%',
-                        ngram: (r.ngram * 100).toFixed(2) + '%',
-                        plagiat: r.plagiat
-                    }))}
-                    filename="hasil_analisis_keseluruhan.csv"
-                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                >
-                    Export CSV
-                </CSVLink>
-            </div>
-
-            <div className="overflow-x-auto bg-white shadow rounded">
-                <table className="w-full table-auto border-collapse rounded overflow-hidden shadow-md">
-                    <thead>
-                        <tr className="bg-black text-white font-bold">
-                            <th className="p-3 border-r-2">Dokumen 1</th>
-                            <th className="p-3 border-r-2">Dokumen 2</th>
-                            <th className="p-3 cursor-pointer border-r-2" onClick={() => handleSort('tfidf')}>
-                                TF-IDF{getArrow('tfidf')}
-                            </th>
-                            <th className="p-3 cursor-pointer border-r-2" onClick={() => handleSort('bert')}>
-                                BERT{getArrow('bert')}
-                            </th>
-                            <th className="p-3 cursor-pointer border-r-2" onClick={() => handleSort('ngram')}>
-                                N-Gram{getArrow('ngram')}
-                            </th>
-                            <th className="p-3 bg-red-800 text-white">Plagiat</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {sortedResults.map((r, i) => (
-                            <tr
-                                key={i}
-                                className={`transition duration-200 border-b font-normal ${
-                                    r.plagiat === 'Ya' ? 'bg-red-100 hover:bg-red-200 hover:font-semibold' 
-                                    : 'hover:bg-green-100 hover:font-semibold'
-                                }`}
-                            >
-                                <td className="p-3 break-words max-w-xs whitespace-normal">{r.doc1}</td>
-                                <td className="p-3 break-words max-w-xs whitespace-normal">{r.doc2}</td>
-                                <td className="p-3 break-words max-w-xs whitespace-normal">{(r.tfidf * 100).toFixed(2)}%</td>
-                                <td className="p-3 break-words max-w-xs whitespace-normal">{(r.bert * 100).toFixed(2)}%</td>
-                                <td className="p-3 break-words max-w-xs whitespace-normal">{(r.ngram * 100).toFixed(2)}%</td>
-                                <td
-                                    className={`p-3 break-words max-w-xs whitespace-normal font-semibold text-center ${
-                                        r.plagiat === 'Ya' ? 'bg-red-200 text-red-800' : 'bg-green-100'
-                                    }`}
-                                >
-                                {r.plagiat}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </MainLayout>
+                    {loading ? (
+                        <div className="text-white text-center p-8 bg-slate-900/50 rounded-xl">Memuat hasil analisis...</div>
+                    ) : rawResults.length > 0 ? (
+                        // ✅ Meneruskan data yang sudah diurutkan dan fungsi sorting
+                        <ResultTable 
+                            results={sortedResults} 
+                            handleSort={handleSort}
+                            sortKey={sortKey}
+                            sortOrder={sortOrder}
+                        />
+                    ) : (
+                        <div className="text-white text-center p-8 bg-slate-900/50 rounded-xl">
+                            Belum ada hasil analisis yang tersimpan. Harap unggah dan jalankan analisis di halaman Upload.
+                        </div>
+                    )}
+                </div>
+            </MainLayout>
+        </div>
     )
 }
 
