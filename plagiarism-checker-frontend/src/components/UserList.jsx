@@ -132,11 +132,11 @@ const UserList = ({ onDataLoaded }) => {
     }
 
     return (
-        <div className="space-y-4"> 
-            <div className="overflow-x-auto">
+        <div className="space-y-4 bg-slate-900 rounded-2xl shadow-2xl p-8 mt-8 border-b-4 border-r-4 border-yellow-500"> 
+            <div className="overflow-x-auto rounded-lg shadow-lg">
                 {/* ... (Tabel Users) ... */}
-                <table className="min-w-full divide-y divide-purple-200">
-                    <thead className="bg-purple-700">
+                <table className="min-w-full divide-y divide-purple-200 bg-white text-gray-900">
+                    <thead className="bg-gray-700">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Username</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>

@@ -6,7 +6,7 @@ import ProtectedRoute from './utils/ProtectedRoute'
 import CreateUserPage from './pages/CreateUserPage'
 import SimilarityResultPage from './pages/SimilarityResultPage'
 import UserManagementPage from './pages/UserManagementPage';
-import UploadReportPage from './pages/UploadReportPage';
+// import UploadReportPage from './pages/UploadReportPage';
 
 
 function App() {
