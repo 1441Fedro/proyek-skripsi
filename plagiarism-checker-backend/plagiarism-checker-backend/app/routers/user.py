@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdateSchema, UserOut
-from app.auth import get_current_user
+from app.routers.auth import get_current_user
 from passlib.hash import bcrypt
 
 router = APIRouter(prefix="/users", tags=["Users"])

@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from bson import ObjectId
 from app.database import SessionLocal, mongo_reports, mongo_analysis
-from app.auth import get_current_user
+from app.routers.auth import get_current_user
 from app.models.user import User
 from app.utils.extractor import extract_logic_text
 from app.services.similarity import (
@@ -22,8 +22,8 @@ from app.services.similarity import (
 
 router = APIRouter(tags=["Reports"])
 
-UPLOAD_FOLDER = "uploaded_reports"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# UPLOAD_FOLDER = "uploaded_reports"
+# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def get_db():
     db = SessionLocal()
@@ -81,7 +81,7 @@ async def upload_reports(
                         text_hash = get_text_hash(text)
                         
                         extracted_texts.append({"filename": fname, "logic_text": text, "text_hash": text_hash})
-                        print(f"✅ Menyimpan hasil ekstraksi: {fname}")
+                        # print(f"✅ Menyimpan hasil ekstraksi: {fname}")
                         mongo_reports.insert_one({
                             "file_name": fname,
                             "file_path": save_path,
@@ -97,7 +97,7 @@ async def upload_reports(
                 text_hash = get_text_hash(text)
                 
                 extracted_texts.append({"filename": file.filename, "logic_text": text, "text_hash": text_hash})
-                print(f"✅ Menyimpan hasil ekstraksi: {file.filename}")
+                # print(f"✅ Menyimpan hasil ekstraksi: {file.filename}")
                 mongo_reports.insert_one({
                     "file_name": file.filename,
                     "file_path": save_path,
@@ -110,7 +110,7 @@ async def upload_reports(
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported file type: {file_ext}")
 
-    print("📦 extracted_texts dikirim ke frontend:", extracted_texts)
+    # print("📦 extracted_texts dikirim ke frontend:", extracted_texts)
     return {"message": "Files uploaded successfully", "batch_id": batch_id, "extracted": extracted_texts}
 
 # 3. POST /analisis/run (trigger manual analisis dari frontend)

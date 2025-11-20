@@ -88,18 +88,18 @@ const UploadPage = () => {
             formData.append('files', file);
         });
 
-        const token = localStorage.getItem('token'); 
-        if (!token) {
-            toast.error("Anda tidak terautentikasi. Silakan login.");
-            setIsUploading(false);
-            return;
-        }
+        // const access_token = localStorage.getItem('access_token'); 
+        // if (!access_token) {
+        //     toast.error("Anda tidak terautentikasi. Silakan login.");
+        //     setIsUploading(false);
+        //     return;
+        // }
 
         try {
             const res = await api.post('/upload', formData, {
                 headers: { 
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`
+                    // 'Authorization': `Bearer ${access_token}`
                 }
             });
 
@@ -134,17 +134,17 @@ const UploadPage = () => {
         }
 
         setIsAnalyzing(true);
-        const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error("Anda tidak terautentikasi. Silakan login.");
-            setIsAnalyzing(false);
-            return;
-        }
+        // const access_token = localStorage.getItem('access_token');
+        // if (!access_token) {
+        //     toast.error("Anda tidak terautentikasi. Silakan login.");
+        //     setIsAnalyzing(false);
+        //     return;
+        // }
         try {
             const res = await api.post('/analisis/run', { batch_id: batchId }, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    // 'Authorization': `Bearer ${access_token}`
             }
         });
             

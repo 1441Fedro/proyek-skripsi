@@ -3,10 +3,10 @@ from fastapi import Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from app.database import get_db  # sesuaikan path modulmu
-from app.routers import auth, report, user, plagiarism
+from app.routers import auth, report, user
 from app.models.user import User
 from app.schemas.user import UserCreate
-from app.auth import get_password_hash  # sesuaikan dengan fungsi hash yang kamu pakai 
+from app.routers.auth import get_password_hash  # sesuaikan dengan fungsi hash yang kamu pakai 
 
 app = FastAPI(title="Plagiarism Checker API")
 
@@ -48,4 +48,4 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(report.router)
 app.include_router(user.router)
-app.include_router(plagiarism.router)
+# app.include_router(plagiarism.router)

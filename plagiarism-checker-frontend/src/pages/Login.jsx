@@ -16,7 +16,7 @@ const Login = () => {
             const res = await api.post('/auth/login', { username, password })
 
             // Simpan token
-            localStorage.setItem('token', res.data.access_token)
+            localStorage.setItem('access_token', res.data.access_token)
 
             // Simpan user (gabungkan info yang dibutuhkan)
             const user = {

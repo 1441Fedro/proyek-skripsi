@@ -6,32 +6,17 @@ from pathlib import Path
 from io import BytesIO
 from docx import Document
 
-# def extract_logic_text(file_path: str) -> str:
-#     ext = Path(file_path).suffix.lower()
-#     try:
-#         if ext == ".pdf":
-#             return extract_logic_from_pdf(file_path)
-#         elif ext == ".docx":
-#             return extract_logic_from_docx(file_path)
-#         elif ext in [".zip", ".rar"]:
-#             return extract_logic_from_archive(file_path)
-#     except:
-#         return None
-#     return None
-
-# from pathlib import Path
-
 def extract_logic_text(file_path: str) -> str:
     ext = Path(file_path).suffix.lower()
     try:
         if ext == ".pdf":
-            print(f"[INFO] Ekstraksi PDF: {file_path}")
+            # print(f"[INFO] Ekstraksi PDF: {file_path}")
             result = extract_logic_from_pdf(file_path)
         elif ext == ".docx":
-            print(f"[INFO] Ekstraksi DOCX: {file_path}")
+            # print(f"[INFO] Ekstraksi DOCX: {file_path}")
             result = extract_logic_from_docx(file_path)
         elif ext in [".zip", ".rar"]:
-            print(f"[INFO] Ekstraksi arsip: {file_path}")
+            # print(f"[INFO] Ekstraksi arsip: {file_path}")
             result = extract_logic_from_archive(file_path)
         else:
             print(f"[WARN] Ekstensi tidak dikenali: {file_path}")
@@ -55,24 +40,6 @@ def extract_full_text(file_path: str) -> str:
         return None
     return None
 
-# ========== PDF ==========
-# def extract_logic_from_pdf(path):
-#     with pdfplumber.open(path) as pdf:
-#         text = ""
-#         logic_section = False
-#         for i, page in enumerate(pdf.pages):
-#             if i < 2:  # Skip halaman 1 dan 2 (cover & listing)
-#                 continue
-#             page_text = page.extract_text() or ""
-#             if "logika" in page_text.lower():
-#                 logic_section = True
-#             if logic_section:
-#                 text += page_text[index:] + "\n"
-#         print(text)
-#         result = text.replace('\n', ' ').lower().strip()
-#         return result if result else ""
-    # return text.replace('\n', ' ').lower().strip()
-
 def extract_logic_from_pdf(path):
     with pdfplumber.open(path) as pdf:
         text = ""
@@ -80,7 +47,7 @@ def extract_logic_from_pdf(path):
 
         for i, page in enumerate(pdf.pages):
             if i < 2:
-                continue  # Lewati cover & daftar isi
+                continue
 
             page_text = page.extract_text() or ""
 
