@@ -6,7 +6,7 @@ import ProtectedRoute from './utils/ProtectedRoute'
 import CreateUserPage from './pages/CreateUserPage'
 import SimilarityResultPage from './pages/SimilarityResultPage'
 import UserManagementPage from './pages/UserManagementPage';
-// import UploadReportPage from './pages/UploadReportPage';
+import ReportListPage from './pages/ReportListPage';
 
 
 function App() {
@@ -29,19 +29,14 @@ function App() {
             <SimilarityResultPage />
           </ProtectedRoute>
         } />
-        {/* <Route path="/uploaded-reports" element={
-          <ProtectedRoute requireAdmin>
-            <UploadReportPage />
-          </ProtectedRoute>
-          } /> */}
         <Route path="/admin/users" element={
           <ProtectedRoute requireAdmin>
             <UserManagementPage />
           </ProtectedRoute>
         } />
-        <Route path="/admin/create-user" element={
+        <Route path="/admin/uploaded-reports" element={
           <ProtectedRoute requireAdmin>
-            <CreateUserPage />
+            <ReportListPage />
           </ProtectedRoute>
         } />
       </Routes>

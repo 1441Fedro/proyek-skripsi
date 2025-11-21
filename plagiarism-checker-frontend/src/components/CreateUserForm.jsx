@@ -11,18 +11,18 @@ const CreateUserForm = ({ onClose, onSuccess }) => {
     const [email, setEmail] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const getAuthHeaders = () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error("Token tidak ditemukan. Harap login ulang.");
-            return {};
-        }
-        return {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
-        };
-    };
+    // const getAuthHeaders = () => {
+    //     const token = localStorage.getItem('token');
+    //     if (!token) {
+    //         toast.error("Token tidak ditemukan. Harap login ulang.");
+    //         return {};
+    //     }
+    //     return {
+    //         headers: {
+    //             Authorization: `Bearer ${token}`,
+    //         }
+    //     };
+    // };
 
     const handleCreate = async (e) => {
         e.preventDefault();
@@ -34,7 +34,7 @@ const CreateUserForm = ({ onClose, onSuccess }) => {
                 email,
                 password,
                 role,
-            }, getAuthHeaders());
+            });
             
             toast.success(`Akun ${username} berhasil dibuat!`);
             

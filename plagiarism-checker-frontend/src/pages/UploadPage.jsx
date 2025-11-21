@@ -45,17 +45,17 @@ const UploadPage = () => {
     // ✅ Mengganti file yang ada & Reset status
     const handleFileChange = (e) => {
         const newFiles = Array.from(e.target.files);
-        setFiles(newFiles); 
-        setIsUploaded(false); // Reset status upload
-        setIsAnalyzed(false); // Reset status analisis
+        setFiles(prevFiles => [...prevFiles, ...newFiles]);
+        setIsUploaded(false);
+        setIsAnalyzed(false);
     };
-
+    
     // ✅ Mengganti file yang ada & Reset status
     const handleDrop = (e) => {
         const droppedFiles = Array.from(e.dataTransfer.files);
-        setFiles(droppedFiles);
-        setIsUploaded(false); // Reset status upload
-        setIsAnalyzed(false); // Reset status analisis
+        setFiles(prevFiles => [...prevFiles, ...droppedFiles]);
+        setIsUploaded(false);
+        setIsAnalyzed(false);
     };
 
     // Saat file dihapus dari antrian, hanya reset status jika files < 2

@@ -1,9 +1,26 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import Modal from './Modal'; 
+import Modal from './Modal';
+import CreateUserForm from './CreateUserForm';
 
 const API_URL = 'http://localhost:8000'; 
+
+// Fungsi Helper untuk memformat waktu ke WIB/Asia/Jakarta
+const formatWIB = (dateString) => {
+    if (!dateString) return 'N/A';
+    // Menggunakan Intl.DateTimeFormat dengan timeZone spesifik
+    return new Date(dateString).toLocaleString('id-ID', {
+        timeZone: 'Asia/Jakarta',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false // Opsional: menggunakan format 24 jam
+    });
+};
 
 // Menerima prop onDataLoaded dari induk
 const UserList = ({ onDataLoaded }) => {
@@ -14,6 +31,7 @@ const UserList = ({ onDataLoaded }) => {
     const [userToDelete, setUserToDelete] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false); 
+    const [showCreateForm, setShowCreateForm] = useState(false);
 
     // Helper untuk mendapatkan Header Otentikasi
     const getAuthHeaders = () => {
@@ -50,6 +68,11 @@ const UserList = ({ onDataLoaded }) => {
     useEffect(() => {
         fetchUsers();
     }, [fetchUsers]);
+
+    const handleCreationSuccess = () => {
+        setShowCreateForm(false); // Tutup modal
+        fetchUsers(); // Refresh daftar pengguna
+    };
 
     const handleEdit = (user) => {
         setSelectedUser({ 
@@ -126,13 +149,28 @@ const UserList = ({ onDataLoaded }) => {
         return `${base} bg-blue-50/70 hover:bg-blue-100`; 
     };
 
-
     if (isLoading) {
         return <div className="text-center p-6 text-lg text-purple-600">Memuat data pengguna...</div>;
     }
 
     return (
-        <div className="space-y-4 bg-slate-900 rounded-2xl shadow-2xl p-8 mt-8 border-b-4 border-r-4 border-yellow-500"> 
+        <div className="space-y-4 rounded-2xl shadow-2xl p-8 mt-8 bg-gradient-to-br from-gray-900 via-slate-900 to-yellow-300"> 
+            {/* ✅ CONTAINER BARU UNTUK JUDUL DAN TOMBOL */}
+            <div className="flex justify-between items-center p-6 border-b border-gray-300">
+                {/* Judul Tabel */}
+                <h2 className="text-xl font-bold text-yellow-300">Daftar Pengguna Aktif</h2>
+                
+                {/* Tombol Tambah User Baru */}
+                <button
+                    onClick={() => setShowCreateForm(true)}
+                    className="flex items-center space-x-2 bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg font-bold hover:bg-yellow-300 transition shadow-lg"
+                >
+                    {/* Ikon Sederhana (Optional, untuk visual) */}
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                    <span>Tambah User Baru</span>
+                </button>
+            </div>
+
             <div className="overflow-x-auto rounded-lg shadow-lg">
                 {/* ... (Tabel Users) ... */}
                 <table className="min-w-full divide-y divide-purple-200 bg-white text-gray-900">
@@ -156,7 +194,7 @@ const UserList = ({ onDataLoaded }) => {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                    {new Date(user.created_at).toLocaleDateString('id-ID')}
+                                    {formatWIB(user.created_at)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                     <div className="flex justify-center space-x-2">
@@ -183,7 +221,6 @@ const UserList = ({ onDataLoaded }) => {
                     </tbody>
                 </table>
             </div>
-
 
             {/* ✅ Modal Edit User (Hanya Tampil jika showEditForm TRUE) */}
             <Modal isOpen={showEditForm} onClose={() => setShowEditForm(false)}>
@@ -254,6 +291,14 @@ const UserList = ({ onDataLoaded }) => {
                         {isSubmitting ? 'Menghapus...' : 'Hapus'}
                     </button>
                 </div>
+            </Modal>
+
+            {/* ✅ MODAL TAMBAH USER BARU */}
+            <Modal isOpen={showCreateForm} onClose={() => setShowCreateForm(false)}>
+                <CreateUserForm 
+                    onClose={() => setShowCreateForm(false)} 
+                    onSuccess={handleCreationSuccess} // Panggil handler baru
+                />
             </Modal>
         </div>
     );

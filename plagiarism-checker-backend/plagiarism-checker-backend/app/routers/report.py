@@ -1,7 +1,7 @@
 import os, shutil, zipfile, patoolib, uuid, tempfile, hashlib
-from typing import List
+from typing import List, Dict, Any
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Query, Body
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -22,8 +22,8 @@ from app.services.similarity import (
 
 router = APIRouter(tags=["Reports"])
 
-# UPLOAD_FOLDER = "uploaded_reports"
-# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+UPLOAD_FOLDER = "uploaded_reports"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def get_db():
     db = SessionLocal()
@@ -85,7 +85,7 @@ async def upload_reports(
                         mongo_reports.insert_one({
                             "file_name": fname,
                             "file_path": save_path,
-                            "uploaded_at": datetime.utcnow(),
+                            "uploaded_at": datetime.utcnow() + timedelta(hours=7),
                             "extracted_text": text,
                             "text_hash": text_hash,
                             "batch_id": batch_id,
@@ -101,7 +101,7 @@ async def upload_reports(
                 mongo_reports.insert_one({
                     "file_name": file.filename,
                     "file_path": save_path,
-                    "uploaded_at": datetime.utcnow(),
+                    "uploaded_at": datetime.utcnow() + timedelta(hours=7),
                     "extracted_text": text,
                     "text_hash": text_hash,
                     "batch_id": batch_id,
@@ -146,7 +146,7 @@ def run_similarity_analysis(
         "bert": bert,
         "ngram": ngram,
         "plagiat": plagiat,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.utcnow() + timedelta(hours=7),
         "analyzed_by": current_user.username
     })
 
@@ -173,3 +173,38 @@ def run_similarity_analysis(
         "pairs": pairs
     }
 
+@router.get("/uploaded-reports", response_model=List[Dict[str, Any]])
+def get_all_report(
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        # 1. Ambil semua dokumen dari koleksi mongo_reports
+        # Kami mengambil field-field penting yang dibutuhkan di frontend
+        reports_cursor = mongo_reports.find({}, {
+            "file_name": 1, 
+            "uploaded_by": 1, 
+            "uploaded_at": 1, 
+            "extracted_text": 1,
+            "batch_id": 1,
+            "_id": 1
+        }).sort("uploaded_at", -1) # Urutkan dari yang terbaru
+
+        reports_list = []
+        for doc in reports_cursor:
+            # 2. Format dokumen untuk dikirim ke frontend
+            reports_list.append({
+                "id": str(doc["_id"]), # Konversi ObjectId ke string
+                "file_name": doc.get("file_name", "N/A"),
+                "username": doc.get("username") or doc.get("uploaded_by", "Unknown"),
+                "uploaded_at": doc.get("uploaded_at", datetime.min).isoformat(), # Format tanggal ke string ISO
+                "text": doc.get("extracted_text", "Teks tidak tersedia."), # Digunakan sebagai 'text' di frontend
+                "batch_id": doc.get("batch_id", "N/A"),
+            })
+        return reports_list
+
+    except Exception as e:
+        print(f"Error fetching reports: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail="Terjadi kesalahan saat mengambil daftar laporan."
+        )
