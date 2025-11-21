@@ -40,7 +40,6 @@ const UploadDropzone = ({ files, isUploading, isAnalyzing, isUploaded, isAnalyze
             : 'bg-gray-400 text-gray-700 cursor-not-allowed'
     }`;
 
-
     return (
         <div className="bg-slate-900 rounded-2xl shadow-2xl p-8 border-t-4 border-purple-500">
             <h2 className="text-2xl font-bold mb-4 text-yellow-300">Unggah Laporan</h2>
@@ -72,7 +71,7 @@ const UploadDropzone = ({ files, isUploading, isAnalyzing, isUploaded, isAnalyze
             </div>
 
             {/* Tombol Aksi */}
-            <div className="mt-6 flex space-x-4">
+            <div className="mt-6 flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0">
                 <button
                     onClick={handleUpload}
                     // ✅ Kondisi Disabled: files.length < 2, isUploading, isAnalyzing, ATAU SUDAH DIUPLOAD

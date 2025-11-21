@@ -9,17 +9,23 @@ const API_URL = 'http://localhost:8000';
 // Fungsi Helper untuk memformat waktu ke WIB/Asia/Jakarta
 const formatWIB = (dateString) => {
     if (!dateString) return 'N/A';
-    // Menggunakan Intl.DateTimeFormat dengan timeZone spesifik
-    return new Date(dateString).toLocaleString('id-ID', {
-        timeZone: 'Asia/Jakarta',
+    // Buat objek Date dari string ISO (misalnya: '2025-11-21T10:30:00+00:00')
+    const date = new Date(dateString);
+
+    // Konfigurasi format tampilan
+    const options = {
+        timeZone: 'Asia/Jakarta', // Kunci utama: Memaksa konversi ke zona waktu ini
+        day: '2-digit',
+        month: '2-digit',
         year: 'numeric',
-        month: 'short',
-        day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false // Opsional: menggunakan format 24 jam
-    });
+        hour12: false // Memastikan format 24 jam
+    };
+    
+    // Konversi dan tampilkan
+    return date.toLocaleString('id-ID', options);
 };
 
 // Menerima prop onDataLoaded dari induk

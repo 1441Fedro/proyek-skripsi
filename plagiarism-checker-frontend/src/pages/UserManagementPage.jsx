@@ -12,7 +12,7 @@ const UserManagementPage = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-700 to-purple-500 p-8">
             <MainLayout>
-                <div className="p-10">
+                <div className="p-4 lg:p-10">
                 {/* ✅ Judul Halaman yang Rapi */}
                 <div className="flex justify-between items-center mb-6 pb-3 border-b border-purple-300">
                     <h1 className="text-3xl font-extrabold text-gray-800">Manajemen Pengguna</h1>

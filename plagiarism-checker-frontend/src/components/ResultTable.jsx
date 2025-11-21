@@ -90,12 +90,13 @@ const ResultTable = ({ results, handleSort, sortKey, sortOrder }) => {
 
     return (
         <div className="bg-white rounded-xl shadow-2xl p-6">
-            
+
             {/* Header: Judul, Limit, dan Export */}
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 border-b pb-4 space-y-4 sm:space-y-0">
-                <h2 className="text-xl font-bold text-gray-800">Detail Hasil Analisis Kesamaan ({results.length} Pasangan)</h2>
-                
-                <div className="flex space-x-4 items-center">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 border-b pb-4 space-y-4 lg:space-y-0">
+                {/* Judul */}
+                <h2 className="text-2xl font-bold text-gray-800">Detail Hasil Analisis Kesamaan ({results.length} Pasangan)</h2>
+
+                <div className="flex flex-col w-full lg:w-auto items-start lg:flex-row lg:space-x-4 space-y-3 lg:space-y-0">
                     {/* Input Limit Baris */}
                     <div className="flex items-center space-x-2">
                         <label htmlFor="row-limit" className="text-sm font-medium text-gray-700">Tampilkan:</label>
@@ -110,13 +111,12 @@ const ResultTable = ({ results, handleSort, sortKey, sortOrder }) => {
                         />
                         <span className="text-sm text-gray-600">baris</span>
                     </div>
-
                     {/* Tombol Export */}
                     <CSVLink
                         data={csvData}
                         headers={csvHeaders}
                         filename={"plagiarism_analysis_report.csv"}
-                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-150 font-medium shadow-md text-sm"
+                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-150 font-medium shadow-md text-sm w-full lg:w-auto text-center"
                     >
                         ⬇️ Export CSV
                     </CSVLink>
@@ -124,8 +124,8 @@ const ResultTable = ({ results, handleSort, sortKey, sortOrder }) => {
             </div>
 
             {/* Tabel Hasil */}
-            <div className="overflow-x-auto">
-                {/* ✅ Kontainer Scroll dengan maxHeight dinamis */}
+            <div className="mt-4 overflow-x-auto">
+                {/* Kontainer Scroll dengan maxHeight dinamis */}
                 <div 
                     style={{ maxHeight: scrollableHeight }} 
                     className="overflow-y-auto border border-gray-200 rounded-lg"
@@ -165,13 +165,18 @@ const ResultTable = ({ results, handleSort, sortKey, sortOrder }) => {
 
                                 return (
                                     <tr key={index} className={rowClasses}>
-                                        <td className="p-4 break-words max-w-xs text-sm text-gray-900">{r.doc1}</td>
-                                        <td className="p-4 break-words max-w-xs text-sm text-gray-900">{r.doc2}</td>
-                                        <td className="p-4 text-center text-sm text-gray-700">{(r.tfidf * 100).toFixed(2)}%</td>
-                                        <td className="p-4 text-center text-sm text-gray-700">{(r.bert * 100).toFixed(2)}%</td>
-                                        <td className="p-4 text-center text-sm text-gray-700">{(r.ngram * 100).toFixed(2)}%</td>
+                                        {/* ✅ Nama Dokumen: Padding p-2 di HP, p-4 di Desktop. text-xs di HP, text-sm di Desktop. */}
+                                        <td className="p-2 sm:p-4 break-words max-w-[150px] text-xs sm:text-sm text-gray-900">{r.doc1}</td>
+                                        <td className="p-2 sm:p-4 break-words max-w-[150px] text-xs sm:text-sm text-gray-900">{r.doc2}</td>
+                                        
+                                        {/* ✅ Skor: Padding p-2 di HP, text-xs. whitespace-nowrap agar skor tidak patah baris */}
+                                        <td className="p-2 sm:p-4 text-center text-xs sm:text-sm text-gray-700 whitespace-nowrap">{(r.tfidf * 100).toFixed(2)}%</td>
+                                        <td className="p-2 sm:p-4 text-center text-xs sm:text-sm text-gray-700 whitespace-nowrap">{(r.bert * 100).toFixed(2)}%</td>
+                                        <td className="p-2 sm:p-4 text-center text-xs sm:text-sm text-gray-700 whitespace-nowrap">{(r.ngram * 100).toFixed(2)}%</td>
+                                        
+                                        {/* ✅ Kolom Plagiat: Padding p-2 di HP, text-xs */}
                                         <td
-                                            className={`p-4 text-center text-sm ${plagiatCellClasses}`}
+                                            className={`p-2 sm:p-4 text-center text-xs sm:text-sm ${plagiatCellClasses}`}
                                         >
                                             {r.plagiat}
                                         </td>

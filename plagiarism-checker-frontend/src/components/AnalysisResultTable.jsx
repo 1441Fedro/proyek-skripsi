@@ -27,17 +27,20 @@ const AnalysisResultTable = ({ results, uploadedFileNames, selectedDoc, setSelec
         : results;
 
     return (
-        // ✅ 1. Modifikasi Desain Kotak (Mirip UploadDropzone)
+        // 1. Modifikasi Desain Kotak (Mirip UploadDropzone)
         <div className="bg-slate-900 rounded-2xl shadow-2xl p-8 mt-8 border-t-4 border-purple-500">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-yellow-300">Hasil Analisis Kesamaan Dokumen ({filteredResults.length} Pasangan)</h2>
+                <h2 className=" text-2x-1 sm:text-2xl font-bold text-yellow-300">Hasil Analisis Kesamaan Dokumen ({filteredResults.length} Pasangan)</h2>
                 
                 {/* Export CSV Button */}
                 <CSVLink
                     data={csvData}
                     headers={csvHeaders}
                     filename={"plagiarism_analysis_report.csv"}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-150 font-medium"
+                    className="bg-green-600 text-white font-medium rounded-lg 
+                                text-sm py-1 px-3 
+                                sm:text-base sm:py-2 sm:px-4 
+                                hover:bg-green-700 transition duration-150 shadow-md w-full sm:w-auto text-center"
                 >
                     ⬇️ Export ke CSV
                 </CSVLink>
@@ -68,16 +71,16 @@ const AnalysisResultTable = ({ results, uploadedFileNames, selectedDoc, setSelec
             </div>
 
             {/* Tabel Hasil */}
-            <div className="overflow-x-auto rounded-lg shadow-lg">
+            <div className="mt-4 overflow-x-auto rounded-lg shadow-lg">
                 <table className="min-w-full divide-y divide-gray-700 bg-white text-gray-900">
                     <thead className="bg-gray-700 text-white">
                         <tr>
-                            <th className="px-3 py-3 text-left text-sm font-semibold uppercase tracking-wider">File 1</th>
-                            <th className="px-3 py-3 text-left text-sm font-semibold uppercase tracking-wider">File 2</th>
-                            <th className="px-3 py-3 text-center text-sm font-semibold uppercase tracking-wider">TF-IDF (%)</th>
-                            <th className="px-3 py-3 text-center text-sm font-semibold uppercase tracking-wider">BERT (%)</th>
-                            <th className="px-3 py-3 text-center text-sm font-semibold uppercase tracking-wider">N-Gram (%)</th>
-                            <th className="px-3 py-3 text-center text-sm font-semibold uppercase tracking-wider">Plagiat</th>
+                            <th className="px-3 py-3 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">File 1</th>
+                            <th className="px-3 py-3 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">File 2</th>
+                            <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold uppercase tracking-wider">TF-IDF (%)</th>
+                            <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold uppercase tracking-wider">BERT (%)</th>
+                            <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold uppercase tracking-wider">N-Gram (%)</th>
+                            <th className="px-3 py-3 text-center text-xs sm:text-sm font-semibold uppercase tracking-wider">Plagiat</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -96,13 +99,13 @@ const AnalysisResultTable = ({ results, uploadedFileNames, selectedDoc, setSelec
 
                             return (
                                 <tr key={index} className={rowClasses}>
-                                    <td className="p-3 break-words max-w-xs text-sm text-gray-900">{r.doc1}</td>
-                                    <td className="p-3 break-words max-w-xs text-sm text-gray-900">{r.doc2}</td>
-                                    <td className="p-3 text-center text-sm text-gray-600">{(r.tfidf * 100).toFixed(2)}%</td>
-                                    <td className="p-3 text-center text-sm text-gray-600">{(r.bert * 100).toFixed(2)}%</td>
-                                    <td className="p-3 text-center text-sm text-gray-600">{(r.ngram * 100).toFixed(2)}%</td>
+                                    <td className="p-2 sm:p-4 break-words max-w-[150px] text-xs sm:text-sm text-gray-900">{r.doc1}</td>
+                                    <td className="p-2 sm:p-4 break-words max-w-[150px] text-xs sm:text-sm text-gray-900">{r.doc2}</td>
+                                    <td className="p-2 sm:p-4 text-center text-xs sm:text-sm text-gray-600 whitespace-nowrap">{(r.tfidf * 100).toFixed(2)}%</td>
+                                    <td className="p-2 sm:p-4 text-center text-xs sm:text-sm text-gray-600 whitespace-nowrap">{(r.bert * 100).toFixed(2)}%</td>
+                                    <td className="p-2 sm:p-4 text-center text-xs sm:text-sm text-gray-600 whitespace-nowrap">{(r.ngram * 100).toFixed(2)}%</td>
                                     <td
-                                        className={`p-3 text-center text-sm font-medium ${plagiatCellClasses}`}
+                                        className={`p-2 sm:p-4 text-center text-sm font-medium ${plagiatCellClasses}`}
                                     >
                                         {r.plagiat}
                                     </td>

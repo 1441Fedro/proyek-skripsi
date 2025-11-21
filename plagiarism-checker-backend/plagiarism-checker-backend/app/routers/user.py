@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, timezone
 from app.database import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdateSchema, UserOut
@@ -36,7 +36,10 @@ def get_all_users(db: Session = Depends(get_db)):
             "id": u.id,
             "username": u.username,
             "email": u.email,
-            "created_at": u.created_at.isoformat() if u.created_at else None,
+            "created_at": (
+                u.created_at.replace(tzinfo=timezone.utc).isoformat()
+                if u.created_at else None
+            ),
             "role": u.role or "Asisten"
         }
         for u in users
