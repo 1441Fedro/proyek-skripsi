@@ -37,7 +37,7 @@ const Login = () => {
     }
 
     return (
-        <div className="flex h-screen w-full">
+        <div className="flex min-h-screen w-full">
             {/* Sisi Kiri: Gambar Lab Komputer */}
             <div className="hidden lg:block lg:w-1/2">
                 <img
@@ -53,67 +53,76 @@ const Login = () => {
                 <div className="p-8 w-full max-w-md">
                     
                     {/* Card Form Login Putih dengan Sudut Membulat */}
-                    <form
-                        onSubmit={handleLogin}
-                        className="bg-white p-10 rounded-3xl shadow-2xl space-y-6"
-                    >
-                        <h1 className="text-3xl font-extrabold text-center text-gray-900 mb-2">
-                            Welcome Back! 👋
-                        </h1>
-                        <p className="text-center text-gray-600 mb-6">
-                            Sign in to your account
-                        </p>
-
-                        {error && (
-                            <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
-                                {error}
-                            </div>
-                        )}
-                        
-                        {/* Input Username */}
-                        <div className="space-y-1">
-                            <input
-                                type="text"
-                                placeholder="Username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition duration-150"
-                                required
-                            />
-                        </div>
-
-                        {/* Input Password */}
-                        <div className="space-y-1">
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition duration-150"
-                                required
-                            />
-                        </div>
-
-                        {/* Opsi Ingat Saya & Lupa Password */}
-                        <div className="flex justify-between items-center text-sm">
-                            <div className="flex items-center">
-                                <input type="checkbox" id="remember" className="h-4 w-4 text-blue-600 rounded" />
-                                <label htmlFor="remember" className="ml-2 text-gray-600">Remember me</label>
-                            </div>
-                            <a href="#" className="text-blue-600 hover:text-blue-800 font-medium">Forgot password?</a>
-                        </div>
-
-
-                        {/* Tombol Login (Gradien) */}
-                        <button
-                            type="submit"
-                            className="w-full p-3 text-white rounded-xl font-semibold 
-                                       bg-gradient-to-r from-blue-600 to-purple-600 
-                                       hover:from-blue-700 hover:to-purple-700 transition duration-200 shadow-lg"
+                    <div className="w-full max-w-md mt-16">
+                        <form
+                            onSubmit={handleLogin}
+                            className="bg-white p-10 rounded-3xl shadow-2xl space-y-6"
                         >
-                            LOG IN
-                        </button>
-                    </form>
+                            <h1 className="text-3xl font-extrabold text-left sm:text-center text-gray-900 mb-2">
+                                Welcome Back! 👋
+                            </h1>
+                            <p className="text-center text-gray-600 mb-6">
+                                Sign in to your account
+                            </p>
+
+                            {error && (
+                                <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                                    {error}
+                                </div>
+                            )}
+                            
+                            {/* Input Username */}
+                            <div className="space-y-1">
+                                <input
+                                    type="text"
+                                    placeholder="Username"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition duration-150"
+                                    required
+                                />
+                            </div>
+
+                            {/* Input Password */}
+                            <div className="space-y-1">
+                                <input
+                                    type="password"
+                                    placeholder="Password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition duration-150"
+                                    required
+                                />
+                            </div>
+
+                            {/* Opsi Ingat Saya & Lupa Password */}
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm space-y-3 sm:space-y-0 text-left">
+                                <div className="flex items-center">
+                                    <input type="checkbox" id="remember" className="h-4 w-4 text-blue-600 rounded" />
+                                    <label htmlFor="remember" className="ml-2 text-gray-600">Remember me</label>
+                                </div>
+                                <a href="#" className="text-blue-600 hover:text-blue-800 font-medium">Forgot password?</a>
+                            </div>
+
+                            {/* Tombol Login (Gradien) */}
+                            <button
+                                type="submit"
+                                className="w-full p-3 text-white rounded-xl font-semibold 
+                                        bg-gradient-to-r from-blue-600 to-purple-600 
+                                        hover:from-blue-700 hover:to-purple-700 transition duration-200 shadow-lg"
+                            >
+                                LOG IN
+                            </button>
+                            {/* <p 
+                                className="pt-4 mt-6 text-center text-sm text-gray-600 border-t border-gray-200"
+                            >
+                                Don't have an account? 
+                                <a href="/register" className="font-bold ml-1 text-blue-600 hover:text-blue-800">
+                                    Sign up
+                                </a>
+                            </p> */}
+                        </form>
+                    </div>
 
                     {/* Registrasi */}
                     <p className="mt-6 text-center text-sm text-white">

@@ -160,16 +160,16 @@ const UserList = ({ onDataLoaded }) => {
     }
 
     return (
-        <div className="space-y-4 rounded-2xl shadow-2xl p-8 mt-8 bg-gradient-to-br from-gray-900 via-slate-900 to-yellow-300"> 
-            {/* ✅ CONTAINER BARU UNTUK JUDUL DAN TOMBOL */}
-            <div className="flex justify-between items-center p-6 border-b border-gray-300">
+        <div className="w-full mx-auto space-y-6 rounded-2xl shadow-2xl p-6 bg-gradient-to-br from-gray-900 via-slate-900 to-yellow-300"> 
+            {/* JUDUL DAN TOMBOL */}
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-gray-300">
                 {/* Judul Tabel */}
-                <h2 className="text-xl font-bold text-yellow-300">Daftar Pengguna Aktif</h2>
+                <h2 className="text-xl lg:text-2xl font-bold text-yellow-300">Daftar Pengguna Aktif</h2>
                 
                 {/* Tombol Tambah User Baru */}
                 <button
                     onClick={() => setShowCreateForm(true)}
-                    className="flex items-center space-x-2 bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg font-bold hover:bg-yellow-300 transition shadow-lg"
+                    className="flex items-center mb-4 space-x-2 bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg font-bold hover:bg-yellow-300 transition shadow-lg mt-4"
                 >
                     {/* Ikon Sederhana (Optional, untuk visual) */}
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
@@ -192,14 +192,14 @@ const UserList = ({ onDataLoaded }) => {
                     <tbody className="divide-y divide-gray-200">
                         {users.map((user) => (
                             <tr key={user.id} className={getRowClasses(user.role)}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.username}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{user.email}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-center">
+                                <td className="p-2 sm:p-4 text-center text-xs sm:text-sm text-gray-900 font-medium whitespace-nowrap">{user.username}</td>
+                                <td className="p-2 sm:p-4 text-center text-xs sm:text-sm text-gray-700 whitespace-nowrap">{user.email}</td>
+                                <td className="p-2 sm:p-4 text-center text-xs sm:text-sm whitespace-nowrap">
                                     <span className={getRoleClasses(user.role)}>
                                         {user.role}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                <td className="p-2 sm:p-4 text-center text-xs sm:text-sm text-gray-500 whitespace-nowrap">
                                     {formatWIB(user.created_at)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">

@@ -60,7 +60,7 @@ const ReportListPage = () => {
         // from-blue-300 (kanan atas) to-purple-400 (kiri bawah)
         <div className="min-h-screen bg-gradient-to-br from-blue-300 to-purple-400 p-8">
             <MainLayout>
-                <div className="p-10 space-y-8">
+                <div className="pt-4 lg:p-8 space-y-8">
                     {/* Judul Halaman dengan warna kontras */}
                     <h1 className="text-4xl font-extrabold text-white drop-shadow-lg">Daftar Laporan Terunggah</h1>
                     

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-// ASUMSI: Modal diimpor dari lokasi yang sama
-import Modal from './Modal'; 
+import Modal from './Modal';
 
 const ReportTable = ({ reports }) => {
     const [selectedReport, setSelectedReport] = useState(null);
@@ -25,48 +24,46 @@ const ReportTable = ({ reports }) => {
     }
 
     return (
-        // Desain Card modern dengan shadow dan sudut membulat
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-purple-100/80">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">Nama Laporan</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">Pengunggah</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">Waktu/Tanggal Unggah</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">ID Batch</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-100">
-                        {reports.map((r, i) => (
-                            <tr 
-                                key={i} 
-                                // ✅ FUNGSI CLICK BARIS
-                                onClick={() => handleRowClick(r)}
-                                className="cursor-pointer hover:bg-purple-50 transition duration-150"
-                            >
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 truncate max-w-xs">{r.file_name}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.username}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {new Date(r.uploaded_at).toLocaleString('id-ID')}
-                                </td>
-                                {/* ✅ KOLOM ID BATCH */}
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {r.batch_id || 'N/A'} {/* Asumsi ada field batch_id dari API */}
-                                </td>
+        <>
+            <div className="bg-white rounded-xl shadow-2xl">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-purple-100/80">
+                            <tr>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">Nama Laporan</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">Pengunggah</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">Waktu/Tanggal Unggah</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">ID Batch</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-100">
+                            {reports.map((r, i) => (
+                                <tr 
+                                    key={i} 
+                                    onClick={() => handleRowClick(r)}
+                                    className="cursor-pointer hover:bg-purple-50 transition duration-150"
+                                >
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 truncate max-w-xs">{r.file_name}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{r.username}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {new Date(r.uploaded_at).toLocaleString('id-ID')}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {r.batch_id || 'N/A'}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
-            {/* ✅ MODAL DETAIL LAPORAN (Pop-up) */}
-            <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+            {/* MODAL DETAIL LAPORAN (Pop-up) */}
+            <Modal isOpen={isModalOpen} onClose={handleCloseModal} className="max-w-7xl w-full">
                 {selectedReport && (
                     <div className="space-y-4">
                         <h3 className="text-xl font-bold text-purple-700">Detail Laporan</h3>
                         <p className="text-base font-semibold text-gray-700">
-                            Nama File: <span className="font-normal text-gray-900">{selectedReport.file_name}</span>
+                            Nama File: <span className="font-normal text-gray-900 break-all">{selectedReport.file_name}</span>
                         </p>
                         
                         <div className="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto border border-gray-200">
@@ -85,7 +82,7 @@ const ReportTable = ({ reports }) => {
                     </div>
                 )}
             </Modal>
-        </div>
+        </>
     );
 };
 

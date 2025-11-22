@@ -12,14 +12,13 @@ const UserManagementPage = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-700 to-purple-500 p-8">
             <MainLayout>
-                <div className="p-4 lg:p-10">
+                <div className="max-w-7xl mx-auto py-8">
                 {/* ✅ Judul Halaman yang Rapi */}
                 <div className="flex justify-between items-center mb-6 pb-3 border-b border-purple-300">
                     <h1 className="text-3xl font-extrabold text-gray-800">Manajemen Pengguna</h1>
                 </div>
 
                 <section className="space-y-6">
-                    
                     {/* Summary Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* ... (Kartu Total Pengguna, Admin, Asisten - Seperti di jawaban sebelumnya) ... */}
@@ -39,9 +38,7 @@ const UserManagementPage = () => {
                             <p className="text-4xl font-extrabold text-green-700">{userCounts.asisten}</p>
                         </div>
                     </div>
-
                 <UserList onDataLoaded={setUserCounts} /> 
-
                 </section>
                 </div>
             </MainLayout>
